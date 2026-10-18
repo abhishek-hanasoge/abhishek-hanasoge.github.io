@@ -7,8 +7,8 @@ const touch=matchMedia('(hover: none)').matches;
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
 const isMac=/Mac|iPhone|iPad/.test(navigator.userAgentData?.platform||navigator.platform);
-if(touch){$('#kHint').textContent='Menu'}
-else if(!isMac){$('#kHint').textContent='Ctrl K';$('#kHint2').textContent='Ctrl K'}
+if(touch)$('#kTip').remove();
+else if(!isMac)$('#kHint2').textContent='Ctrl K';
 $('#year').textContent=new Date().getFullYear();
 
 /* ---------- background: test grid + release scan ---------- */
@@ -202,7 +202,7 @@ $$('.card').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundin
     {g:'Navigate',t:'About me',k:'explore',a:()=>go('#about')},
     {g:'Navigate',t:'Contact',k:'hi say',a:()=>go('#contact')},
     {g:'Actions',t:'Message me on LinkedIn',k:'contact linkedin',a:()=>window.open(LINKEDIN,'_blank','noopener')},
-    {g:'Actions',t:'Download résumé',k:'resume cv pdf',a:()=>window.open('assets/resume.pdf','_blank','noopener')},
+    {g:'Actions',t:'Download resume',k:'resume cv pdf',a:()=>window.open('assets/resume.pdf','_blank','noopener')},
     {g:'Actions',t:'Back to top',k:'home',a:()=>go('#top')},
   ];
   const bg=$('#cmdk'),inp=$('#kIn'),list=$('#kList');let sel=0,shown=[],lastFocus=null;
@@ -220,7 +220,6 @@ $$('.card').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundin
   function open(){lastFocus=document.activeElement;bg.classList.add('show');inp.value='';sel=0;draw();setTimeout(()=>inp.focus(),10)}
   function close(){bg.classList.remove('show');lastFocus?.focus?.({preventScroll:true})}
   function run(i){const c=shown[i];if(!c)return;close();setTimeout(c.a,60)}
-  $('#openK').onclick=open;
   bg.onclick=e=>{if(e.target===bg)close()};
   inp.oninput=()=>{sel=0;draw()};
   addEventListener('keydown',e=>{
