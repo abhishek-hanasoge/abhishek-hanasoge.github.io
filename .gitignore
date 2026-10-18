@@ -2,3 +2,5 @@
 # LinkedIn export: contains personal contact details
 assets/Profile.pdf
 htmlmock.html
+node_modules/
+dist/
