@@ -13,7 +13,6 @@ assets/resume.pdf     ← add this
 
 ## Before going live
 - Add your résumé at `assets/resume.pdf`.
-- Replace the GitHub placeholder URL in `index.html` (search for `TODO`).
 
 ## Run locally
 ```
