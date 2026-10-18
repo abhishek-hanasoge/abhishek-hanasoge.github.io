@@ -7,7 +7,7 @@ index.html                    page markup
 src/main.js                   test-grid background, typewriter, Bug Hunt game, ⌘K command palette
 src/styles.css                styles
 public/                       copied as-is to the site root (favicon, 404 page)
-public/assets/resume.pdf      ← add this
+public/assets/*.pdf           resume (Resume button)
 .github/workflows/deploy.yml  builds and deploys to GitHub Pages on every push to main
 ```
 

@@ -202,7 +202,7 @@ $$('.card').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundin
     {g:'Navigate',t:'About me',k:'explore',a:()=>go('#about')},
     {g:'Navigate',t:'Contact',k:'hi say',a:()=>go('#contact')},
     {g:'Actions',t:'Message me on LinkedIn',k:'contact linkedin',a:()=>window.open(LINKEDIN,'_blank','noopener')},
-    {g:'Actions',t:'Download resume',k:'resume cv pdf',a:()=>window.open('assets/resume.pdf','_blank','noopener')},
+    {g:'Actions',t:'Download resume',k:'resume cv pdf',a:()=>window.open('/assets/Abhishek-Hanasoge-QA-Lead-Resume.pdf','_blank','noopener')},
     {g:'Actions',t:'Back to top',k:'home',a:()=>go('#top')},
   ];
   const bg=$('#cmdk'),inp=$('#kIn'),list=$('#kList');let sel=0,shown=[],lastFocus=null;
