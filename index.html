@@ -61,9 +61,6 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 <a class="skip" href="#work">Skip to content</a>
@@ -94,7 +91,7 @@
       <h1>Hey, I'm Abhishek,<br>a <span class="rot" id="rot" aria-hidden="true">QA Leader</span><span class="sr-only">QA Leader</span></h1>
       <p class="tag">I break things <span>before your customers do</span> &amp;&amp; ship releases that stay shipped.</p>
       <div class="ctas">
-        <a class="btn primary" href="#play">Hunt a bug →</a>
+        <a class="btn primary" href="#play">Spot the regression →</a>
         <a class="btn ghost" href="#work">See my work</a>
         <a class="btn ghost" href="#contact">Let's talk</a>
       </div>
@@ -210,18 +207,40 @@
   <!-- PLAY -->
   <section id="play" class="block wrap">
     <div class="eyebrow rv">I Play</div>
-    <h2 class="rv">Bug Hunt. Beat my time.</h2>
-    <div class="game col rv" id="game" style="max-width:720px">
-      <div class="game-top"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><span id="gTitle">bug_hunt.py</span><span class="timer" id="gTime" aria-label="Elapsed time">00.00s</span></div>
-      <div id="gBody">
-        <div class="game-intro">
-          <h3>Three snippets. One bug each.</h3>
-          <p>Click the line that breaks the code. Wrong click costs you 3 seconds.</p>
-          <button class="btn primary" id="gStart">Start hunting</button>
-          <div class="best" style="margin-top:16px">My time: 19.40s · Your best: <span id="gBest">—</span></div>
+    <h2 class="rv">Visual regression. Spot 4 diffs.</h2>
+    <p class="lead col rv" style="margin:-14px 0 30px">Build #482 just landed. Compare it to the baseline and click every difference in the new build. Wrong clicks cost 2 seconds.</p>
+    <div class="game rv">
+      <div class="game-top"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><span>diff: baseline ↔ build #482</span><span>found <b id="gF">0</b>/4</span><span class="timer" id="gT" aria-label="Elapsed time">00.0s</span></div>
+      <div class="g-wrap">
+        <div class="g-panes">
+          <div class="pane">
+            <div class="cap"><span>EXPECTED · baseline</span><span>main@a41f</span></div>
+            <div class="ui" aria-label="Baseline build">
+              <div class="hd"><b>Threat feed</b><span class="chip">TAXII 2.1</span></div>
+              <div class="row"><span>indicator--8c1e</span><span class="sev h">High</span></div>
+              <div class="row"><span>indicator--33ab</span><span class="sev m">Medium</span></div>
+              <div class="row"><span>indicator--f902</span><span class="sev l">Low</span></div>
+              <div class="ft"><small>Showing 3 of 21</small><span class="go">Export ↗</span></div>
+            </div>
+          </div>
+          <div class="pane actual" id="actual">
+            <div class="cap"><span>ACTUAL · build #482</span><span>feat@9e2c</span></div>
+            <div class="ui" id="aui" aria-label="New build: find the differences">
+              <div class="hd"><b>Threat feed</b><span class="chip" data-d="protocol version changed">TAXII 2.0</span></div>
+              <div class="row"><span>indicator--8c1e</span><span class="sev l" data-d="severity colour regressed">High</span></div>
+              <div class="row"><span>indicator--33ab</span><span class="sev m">Medium</span></div>
+              <div class="row"><span>indicator--f902</span><span class="sev l">Low</span></div>
+              <div class="ft"><small data-d="item count changed">Showing 3 of 12</small><span class="go" data-d="typo in button">Exprot ↗</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="g-ov" id="gOv">
+          <h3>Ready to sign off build #482?</h3>
+          <p>Four things changed that shouldn't have. My best time is <b>11.6s</b>.</p>
+          <button class="btn primary" id="gGo">▶ Start the run</button>
         </div>
       </div>
-      <div class="game-msg" id="gMsg" style="display:none"><span id="gHint" aria-live="polite"></span><span class="kbd" id="gStep"></span></div>
+      <div class="game-msg"><span id="gMsg" aria-live="polite">waiting for tester…</span><span class="best">My time: 11.6s · Your best: <span id="gB">—</span></span></div>
     </div>
   </section>
 

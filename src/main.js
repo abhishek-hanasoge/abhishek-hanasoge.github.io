@@ -1,3 +1,9 @@
+import '@fontsource/onest/400.css';
+import '@fontsource/onest/500.css';
+import '@fontsource/onest/600.css';
+import '@fontsource/onest/700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
 import './styles.css';
 
 /* ---------- helpers ---------- */
@@ -122,73 +128,49 @@ if(!reduce){
 }
 $$('.card').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')}));
 
-/* ---------- Bug Hunt game ---------- */
+/* ---------- Visual regression game ---------- */
 (()=>{
-  const MY_TIME=19.4;
-  const rounds=[
-    {file:'parse_feed.py',bug:3,hint:'Mutable default argument — shared across calls.',lines:[
-      '<span class="kw">import</span> json',
-      '',
-      '<span class="kw">def</span> <span class="fn">parse_indicators</span>(raw, seen=[]):',
-      '    <span class="cm"># collect unique STIX indicator ids</span>',
-      '    <span class="kw">for</span> obj <span class="kw">in</span> json.loads(raw)[<span class="st">"objects"</span>]:',
-      '        <span class="kw">if</span> obj[<span class="st">"id"</span>] <span class="kw">not in</span> seen:',
-      '            seen.append(obj[<span class="st">"id"</span>])',
-      '    <span class="kw">return</span> seen']},
-    {file:'paginate.py',bug:5,hint:'Off-by-one: the last page is skipped.',lines:[
-      '<span class="kw">def</span> <span class="fn">fetch_all</span>(client, total, size=<span class="nm">100</span>):',
-      '    pages = (total + size - <span class="nm">1</span>) // size',
-      '    out = []',
-      '    <span class="cm"># TAXII collection, page by page</span>',
-      '    <span class="kw">for</span> p <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, pages):',
-      '        out += client.<span class="fn">get</span>(page=p, limit=size)',
-      '    <span class="kw">return</span> out']},
-    {file:'retry.py',bug:6,hint:'Compares a string to an int — never retries.',lines:[
-      '<span class="kw">import</span> time, requests',
-      '',
-      '<span class="kw">def</span> <span class="fn">get_with_retry</span>(url, tries=<span class="nm">3</span>):',
-      '    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(tries):',
-      '        r = requests.<span class="fn">get</span>(url, timeout=<span class="nm">10</span>)',
-      '        <span class="kw">if</span> r.status_code != <span class="st">"503"</span>:',
-      '            <span class="kw">return</span> r',
-      '        time.<span class="fn">sleep</span>(<span class="nm">2</span> ** i)',
-      '    <span class="kw">return</span> r']}
-  ];
-  let idx=0,t0=0,penalty=0,raf,best=parseFloat(store.get('bugHuntBest'))||null;
-  const body=$('#gBody'),timeEl=$('#gTime'),msg=$('#gMsg'),hint=$('#gHint'),step=$('#gStep');
-  const fmt=s=>s.toFixed(2).padStart(5,'0')+'s';
-  if(best)$('#gBest').textContent=fmt(best);
-  function tick(){timeEl.textContent=fmt((performance.now()-t0)/1000+penalty);raf=requestAnimationFrame(tick)}
-  function start(){cancelAnimationFrame(raf);idx=0;penalty=0;t0=performance.now();msg.style.display='flex';tick();render()}
-  function render(){
-    const r=rounds[idx];$('#gTitle').textContent=r.file;
-    body.innerHTML='<div class="code" role="list">'+r.lines.map((l,i)=>`<div class="ln" role="button" tabindex="0" aria-label="Line ${i+1}" data-i="${i+1}"><span style="white-space:pre">${l||' '}</span></div>`).join('')+'</div>';
-    hint.textContent='Find the bug.';step.textContent=`${idx+1} / ${rounds.length}`;
-    $$('#gBody .ln').forEach(el=>{
-      el.onclick=()=>pick(el);
-      el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(el)}};
-    });
-    $('#gBody .ln').focus({preventScroll:true});
+  const MY_TIME=11.6,TOTAL=4;
+  const ui=$('#aui'),pane=$('#actual'),ov=$('#gOv'),F=$('#gF'),T=$('#gT'),M=$('#gMsg'),B=$('#gB');
+  let t0,pen=0,found=0,raf,on=false,best=parseFloat(store.get('regressionBest'))||null;
+  const fmt=s=>s.toFixed(1).padStart(4,'0')+'s';
+  if(best)B.textContent=fmt(best);
+  // every element in the new build is a click target, so keyboard players can't spot the diffs by tab order
+  const targets=[...ui.querySelectorAll('b,span,small')].filter(e=>!e.children.length);
+  targets.forEach(e=>e.tabIndex=-1);
+  function tick(){T.textContent=fmt((performance.now()-t0)/1000+pen);raf=requestAnimationFrame(tick)}
+  function start(){
+    cancelAnimationFrame(raf);
+    $$('#aui [data-d]').forEach(e=>e.classList.remove('found'));found=0;pen=0;F.textContent=0;
+    ov.style.display='none';on=true;t0=performance.now();M.textContent='scanning build #482…';tick();
+    targets.forEach(e=>e.tabIndex=0);targets[0].focus({preventScroll:true});
   }
-  function pick(el){
-    const r=rounds[idx];
-    if(+el.dataset.i===r.bug){el.classList.add('good');hint.textContent='✓ '+r.hint;$$('#gBody .ln').forEach(e=>{e.onclick=null;e.onkeydown=null});
-      setTimeout(()=>{idx++;idx<rounds.length?render():finish()},1100)}
-    else{el.classList.add('bad');penalty+=3;hint.textContent='✗ Not that one. +3s';setTimeout(()=>el.classList.remove('bad'),500)}
+  function hit(el,x,y){
+    if(!on)return;const d=el.closest('[data-d]');
+    if(d&&!d.classList.contains('found')){
+      d.classList.add('found');found++;F.textContent=found;M.textContent=`bug ${found} logged · ${d.dataset.d}`;
+      if(found===TOTAL)finish();
+    }else if(!d){
+      pen+=2;M.textContent='no diff there · +2s';
+      const r=pane.getBoundingClientRect(),m=document.createElement('span');
+      m.className='miss';m.style.left=x-r.left+'px';m.style.top=y-r.top+'px';pane.appendChild(m);setTimeout(()=>m.remove(),600);
+    }
   }
+  ui.addEventListener('click',e=>hit(e.target,e.clientX,e.clientY));
+  ui.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();
+    const r=e.target.getBoundingClientRect();hit(e.target,r.left+r.width/2,r.top+r.height/2);
+  });
   function finish(){
-    cancelAnimationFrame(raf);const t=(performance.now()-t0)/1000+penalty;
-    timeEl.textContent=fmt(t);
-    if(best===null||t<best){best=t;store.set('bugHuntBest',String(t))}
-    const win=t<MY_TIME;
-    body.innerHTML=`<div class="game-intro"><h3>${win?'You beat me. Impressive.':'All bugs squashed.'}</h3>
-      <p>Your time: <b style="color:var(--text)">${fmt(t)}</b>${penalty?` (incl. ${penalty}s penalty)`:''}. ${win?'Maybe you should be hiring me.':`My time is ${fmt(MY_TIME)}. Try again?`}</p>
-      <button class="btn primary" id="gAgain">Play again</button>
-      <div class="best" style="margin-top:16px">My time: ${fmt(MY_TIME)} · Your best: ${fmt(best)}</div></div>`;
-    msg.style.display='none';$('#gTitle').textContent='bug_hunt.py';
-    const again=$('#gAgain');again.onclick=start;again.focus({preventScroll:true});
+    on=false;cancelAnimationFrame(raf);targets.forEach(e=>e.tabIndex=-1);
+    const t=(performance.now()-t0)/1000+pen;T.textContent=fmt(t);
+    if(best===null||t<best){best=t;store.set('regressionBest',String(t))}
+    B.textContent=fmt(best);
+    const win=t<MY_TIME;M.textContent='4/4 regressions caught · build #482 rejected';
+    ov.innerHTML=`<h3>${win?'You beat me. Want a job?':'Build #482 rejected.'}</h3><p>Your time: <b>${fmt(t)}</b>${pen?` (incl. ${pen}s penalty)`:''}. The diffs: protocol version, severity colour, item count and a typo in the button.</p><button class="btn primary" id="gAgain">↻ Run again</button>`;
+    ov.style.display='flex';const again=$('#gAgain');again.onclick=start;again.focus({preventScroll:true});
   }
-  $('#gStart').onclick=start;
+  $('#gGo').onclick=start;
 })();
 
 /* ---------- command palette ---------- */
@@ -198,7 +180,7 @@ $$('.card').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundin
     {g:'Navigate',t:'Go to Work',k:'work experience',a:()=>go('#work')},
     {g:'Navigate',t:'Go to Projects',k:'build',a:()=>go('#build')},
     {g:'Navigate',t:'Go to QA metrics',k:'test stats',a:()=>go('#test')},
-    {g:'Navigate',t:'Play Bug Hunt',k:'game play',a:()=>go('#play')},
+    {g:'Navigate',t:'Play Visual Regression',k:'game play diff bug',a:()=>go('#play')},
     {g:'Navigate',t:'About me',k:'explore',a:()=>go('#about')},
     {g:'Navigate',t:'Contact',k:'hi say',a:()=>go('#contact')},
     {g:'Actions',t:'Message me on LinkedIn',k:'contact linkedin',a:()=>window.open(LINKEDIN,'_blank','noopener')},
