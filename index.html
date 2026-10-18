@@ -79,8 +79,17 @@
     </div>
     <div class="nav-right">
       <!-- Resume lives at public/assets/Abhishek-Hanasoge-QA-Lead-Resume.pdf -->
-      <a class="pill res" href="/assets/Abhishek-Hanasoge-QA-Lead-Resume.pdf" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" style="stroke:currentColor" aria-hidden="true"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg><span class="t">Resume</span></a>
+      <a class="pill res" href="/assets/Abhishek-Hanasoge-QA-Lead-Resume.pdf" target="_blank" rel="noopener" aria-label="Resume (PDF)"><svg class="ico" viewBox="0 0 24 24" style="stroke:currentColor" aria-hidden="true"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg><span class="t">Resume</span></a>
+      <button class="pill menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><svg class="ico" viewBox="0 0 24 24" style="stroke:currentColor" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
+  </nav>
+  <nav class="mnav wrap" id="mnav" aria-label="Sections" hidden>
+    <a href="#work" data-s="work">I Work</a>
+    <a href="#build" data-s="build">I Build</a>
+    <a href="#test" data-s="test">I Test</a>
+    <a href="#play" data-s="play">I Play</a>
+    <a href="#about" data-s="about">I Explore</a>
+    <a href="#contact" data-s="contact">Say Hi</a>
   </nav>
 </header>
 

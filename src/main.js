@@ -115,8 +115,18 @@ $('#year').textContent=new Date().getFullYear();
 
 /* ---------- header + scroll spy + reveal + counters ---------- */
 const hdr=$('#hdr'),onScroll=()=>hdr.classList.toggle('scrolled',scrollY>20);
+/* mobile menu */
+(()=>{
+  const btn=$('#menuBtn'),menu=$('#mnav');
+  function set(open){menu.hidden=!open;hdr.classList.toggle('menu-open',open);btn.setAttribute('aria-expanded',open);btn.setAttribute('aria-label',open?'Close menu':'Open menu')}
+  btn.onclick=()=>set(menu.hidden);
+  menu.addEventListener('click',e=>{if(e.target.closest('a'))set(false)});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){set(false);btn.focus()}});
+  document.addEventListener('click',e=>{if(!menu.hidden&&!hdr.contains(e.target))set(false)});
+  matchMedia('(min-width:821px)').addEventListener('change',e=>{if(e.matches)set(false)});
+})();
 addEventListener('scroll',onScroll,{passive:true});onScroll();
-const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){$$('.links a').forEach(a=>a.classList.toggle('active',a.dataset.s===e.target.id))}}),{rootMargin:'-45% 0px -50% 0px'});
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){$$('[data-s]').forEach(a=>a.classList.toggle('active',a.dataset.s===e.target.id))}}),{rootMargin:'-45% 0px -50% 0px'});
 $$('section[id]').forEach(s=>spy.observe(s));
 const rv=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rv.unobserve(e.target)}}),{threshold:.12});
 $$('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%4)*70+'ms';rv.observe(el)});
